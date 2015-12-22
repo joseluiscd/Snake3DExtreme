@@ -9,6 +9,7 @@ using namespace std;
 class cgvScene{
 private:
     vector<cgvCamera> cameras;
+    cameraType tcam;
 
 public:
     cgvScene();

@@ -1,6 +1,5 @@
 #include "cgvScene.h"
-
-cgvScene::cgvScene():cameras(){
+cgvScene::cgvScene():cameras(), tcam(CGV_PARALLEL){
     cameras.push_back(cgvCamera(cgvPoint3D(6.0,4.0,8),cgvPoint3D(0,0,0),cgvPoint3D(0,1.0,0),
 		                                3, 3, 0.1, 200));
 }
@@ -17,5 +16,5 @@ void cgvScene::addCamera(cgvCamera &cam){
 }
 
 void cgvScene::applyCamera(int numCamera){
-    cameras.at(numCamera).apply();
+    cameras.at(numCamera).apply(tcam);
 }
