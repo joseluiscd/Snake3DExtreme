@@ -1,6 +1,6 @@
 CXX_FLAGS = -std=c++11
 GL_FLAGS = -lSDL2 -lGL -lGLU
-OBJECTS = main.o cgvInterfaceSDL.o cgvViewport.o cgvCamera.o cgvPoint3D.o cgvScene.o
+OBJECTS = main.o cgvInterfaceSDL.o cgvViewport.o cgvCamera.o cgvPoint3D.o cgvScene.o cgvColor.o cgvLight.o cgvMaterial.o
 
 .PHONY: run clean
 

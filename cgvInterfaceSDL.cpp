@@ -48,6 +48,11 @@ void cgvInterfaceSDL::initOpenGL(){
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(0, 0, 0, 0);
+
+    glEnable(GL_LIGHTING); // enable the lighting of the scene
+    glEnable(GL_NORMALIZE); // normalize the normal vectors required by the lighting computation.
+	glEnable(GL_TEXTURE_2D); // enable the use of 2D textures
+
 }
 
 void cgvInterfaceSDL::proccessEvents(){
