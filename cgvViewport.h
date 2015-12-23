@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "cgvScene.h"
+#include "cgvColor.h"
 
 class cgvViewport{
 private:
@@ -16,6 +17,8 @@ public:
     void applyViewport(int width, int height); //Width and height of the window
     void applyCamera();
     void renderScene();
+
+
 };
 
 #endif

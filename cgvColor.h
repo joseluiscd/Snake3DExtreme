@@ -1,9 +1,9 @@
 #ifndef __CGVCOLOR
 #define __CGVCOLOR
 
-#include <GL/glut.h>
+#include <GL/gl.h>
 
-typedef enum {
+enum {
 	R,
 	G,
 	B,
@@ -16,7 +16,7 @@ class cgvColor {
 		// attributes
 
 		double color[4]; // components R, G, B, A of the color
-		
+
 		// Methods
 
 	public:
@@ -38,4 +38,3 @@ class cgvColor {
 };
 
 #endif
-

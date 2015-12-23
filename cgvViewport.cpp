@@ -3,7 +3,7 @@
 #include "cgvException.h"
 
 #include <GL/gl.h>
-cgvViewport::cgvViewport(float _x, float _y, float _w, float _h, cgvScene* _scene, int cameraNum){
+cgvViewport::cgvViewport(float _x, float _y, float _w, float _h, cgvScene* _scene, int cameraNum) {
     scene = _scene;
     numCamera = cameraNum;
     _x >=0 && _x <=1 ? x = _x : throw cgvException("x must be between 0 and 1");
@@ -15,7 +15,7 @@ cgvViewport::cgvViewport(float _x, float _y, float _w, float _h, cgvScene* _scen
 
 void cgvViewport::applyViewport(int width, int height){
      glViewport(x*width, y*height, w*width, h*height);
-}
+ }
 
 void cgvViewport::applyCamera(){
     scene->applyCamera(numCamera);

@@ -12,7 +12,7 @@
 #ifndef __ENUM_XYZ
 #define __ENUM_XYZ
 
-typedef enum {
+enum {
 	X,
 	Y,
 	Z
@@ -28,8 +28,8 @@ class cgvPoint3D {
 		// Constructors
 		cgvPoint3D();
 		cgvPoint3D( const double& x, const double& y, const double& z );
-		
-		// Copy Constructor 
+
+		// Copy Constructor
 		cgvPoint3D( const cgvPoint3D& p );
 
 		// Assignment operator
@@ -48,4 +48,3 @@ class cgvPoint3D {
 		void set( const double& x, const double& y, const double& z);
 };
 #endif
-

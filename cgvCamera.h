@@ -1,9 +1,8 @@
 #ifndef __CGVCAMERA
 #define __CGVCAMERA
 
-#include <GL/glut.h>
-
 #include "cgvPoint3D.h"
+#include <GL/gl.h>
 
 typedef enum {
 	CGV_PARALLEL,

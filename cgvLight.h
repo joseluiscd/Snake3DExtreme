@@ -1,10 +1,9 @@
 #ifndef __CGVLIGHT
 #define __CGVLIGHT
 
-#include <GL/glut.h>
-
 #include "cgvPoint3D.h"
 #include "cgvColor.h"
+#include <GL/gl.h>
 
 class cgvLight {
 
@@ -27,9 +26,9 @@ class cgvLight {
 		double spotlight_angle;
 		double spotlight_exponent;
 
-		bool on; // Indicate whether the light is on or not. 
+		bool on; // Indicate whether the light is on or not.
 
-		// Methods 
+		// Methods
 
 	public:
 		// Default constructors and destructor
@@ -38,20 +37,20 @@ class cgvLight {
 		// Other constructors
 		// point light source
 		cgvLight(const unsigned int _idLight,
-			     const cgvPoint3D & _position, 
+			     const cgvPoint3D & _position,
 			     const cgvColor & cAmb, const cgvColor & cDif, const cgvColor & cEsp,
 				 const double a0, const double a1, const double a2);
 
 		// spotlight
 		cgvLight(const unsigned int _idLight,
-			     const cgvPoint3D & _position, 
+			     const cgvPoint3D & _position,
 			     const cgvColor& cAmb, const cgvColor& cDif, const cgvColor& cEsp,
 				 const double a0, const double a1, const double a2,
 								 const cgvPoint3D& spotlight_dir, const double spotlight_ang, const double spotlight_exp);
 
 		// Methods
 		cgvPoint3D & getPosition(void); // it returns the position of the light
-		void setPosition(cgvPoint3D pos); // set the position of the light 
+		void setPosition(cgvPoint3D pos); // set the position of the light
 
 		void set(const cgvColor& cAmb, const cgvColor& cDif, const cgvColor& cEsp);
 		void setAmbient(const cgvColor& cAmb);
@@ -72,4 +71,3 @@ class cgvLight {
 };
 
 #endif
-
