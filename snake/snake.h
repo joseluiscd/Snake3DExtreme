@@ -2,21 +2,29 @@
 #define SNAKE_H
 
 #include <list>
-#include <pair>
-#include "labyrinth.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
+
+using namespace std;
+
+class snake;
 
 typedef enum{
-    SNAKE_B_L; // ←↓
-    SNAKE_B_R; // ↓→
-    SNAKE_T_L; // ↑→
-    SNAKE_T_R; // ←↑
+    SNAKE_B_L, // ←↓
+    SNAKE_B_R, // ↓→
+    SNAKE_T_L, // ↑→
+    SNAKE_T_R, // ←↑
+    SNAKE_HORIZ, // --
+    SNAKE_VERTIC, // |
+    SNAKE_HEAD,
+    SNAKE_TAIL
 } snakeCellType;
 
 typedef enum{
-    SNAKE_UP;
-    SNAKE_DOWN;
-    SNAKE_LEFT;
-    SNAKE_RIGHT;
+    SNAKE_UP,
+    SNAKE_DOWN,
+    SNAKE_LEFT,
+    SNAKE_RIGHT
 } snakeDirection;
 
 typedef struct {
@@ -24,13 +32,20 @@ typedef struct {
     snakeCellType celltype;
 } snakeCell;
 
+typedef list<snakeCell>::iterator cellIterator;
+
 //Data structure to represent the snake
 class snake{
 private:
-    list<pair<int, int> > body;
+    list<snakeCell> body;
 
 public:
-    void advance(const labyrinth& lab, snakeDirection d, bool food=false);
-}
+    snake();
+    void advance(snakeDirection d, bool food=false);
+    inline void updateCoordinates(snakeDirection d, int& newX, int& newY);
+
+    void render();
+    static void drawCell(snakeCellType t, int x, int y);
+};
 
 #endif

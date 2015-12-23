@@ -9,8 +9,14 @@ windowTitle(w_title)
 
 }
 
+cgvInterfaceSDL& cgvInterfaceSDL::getInstance(char* w_title, int w, int h, bool fullscreen){
+    //This class is used as a Singleton
+    static cgvInterfaceSDL interface(w_title, w, h, fullscreen); //Lazy initialization
+    return interface;
+}
+
 void cgvInterfaceSDL::initSDL(){
-    if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
+    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 ) {
         fprintf(stderr, "Video initialization failed: %s\n", SDL_GetError());
         quitSDL();
     }
@@ -34,7 +40,7 @@ void cgvInterfaceSDL::initSDL(){
 
     renderer = SDL_CreateRenderer(window, -1, 0);
     if(renderer==NULL){
-        fprintf(stderr, "Renderer could not be created: %s\n",SDL_GetError( ) );
+        fprintf(stderr, "Renderer could not be created: %s\n", SDL_GetError());
         quitSDL();
     }
 }
@@ -62,6 +68,9 @@ void cgvInterfaceSDL::proccessEvents(){
         switch( event.type ) {
         case SDL_KEYDOWN:
             // Key was pressed
+            if(event.key.keysym.sym == SDLK_ESCAPE){
+                quitSDL(0);
+            }
             break;
         case SDL_QUIT:
             quitSDL(0);
