@@ -5,6 +5,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <vector>
+#include <set>
 #include <functional>
 
 #include "cgvScene.h"
@@ -24,6 +25,7 @@ private:
     SDL_WindowFlags windowFlags;
 
     vector<cgvViewport> viewports;
+    set<cgvScene*> scenes_keyboard;
     cgvInterfaceSDL(char* title, int w=640, int h=480, bool fullscreen=false);
     cgvInterfaceSDL(cgvInterfaceSDL& inter);
     cgvInterfaceSDL& operator=(const cgvInterfaceSDL& inter);
@@ -39,21 +41,16 @@ public:
     void addViewport(cgvViewport& v);
 
     //Adds a timer with a callback function
-    // void something(T* value);
-    template<typename T= void* >
-    int addTimer(function<void(T*)>& callback, unsigned int interval = 10, T* param=NULL){
-        function<unsigned int(unsigned int, void*)> new_callback = [&](unsigned int interval, T* param)->unsigned int{
-            callback(param);
-            return interval;
-        };
-        int ret = SDL_AddTimer(interval, new_callback.operator(), param);
-        return ret!=0?ret:throw cgvException("The timer could not be added.");
-    }
+    // void something();
+    int addTimer(cgvScene* scene, unsigned int interval = 10);
+    void addKeyboardListener(cgvScene* scene);
 
     void deleteTimer(int timer){
         SDL_RemoveTimer(timer) ? true : throw cgvException("The timer wasn't removed");
     }
 
+
+    static unsigned int timerCallback(unsigned int delay, void* callback);
     static cgvInterfaceSDL& getInstance(char* w_title = "", int w=640, int h=480, bool fullscreen=false);
 };
 

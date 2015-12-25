@@ -11,17 +11,17 @@ cgvPoint3D::cgvPoint3D() {
 cgvPoint3D::cgvPoint3D (const double& x, const double& y, const double& z ) {
 	c[X] = x;
 	c[Y] = y;
-	c[Z] = z;	
+	c[Z] = z;
 }
 
-// Copy constructor 
+// Copy constructor
 cgvPoint3D::cgvPoint3D (const cgvPoint3D& p ) {
 	c[X] = p.c[X];
 	c[Y] = p.c[Y];
 	c[Z] = p.c[Z];
 }
 
-// Assignment operator 
+// Assignment operator
 cgvPoint3D& cgvPoint3D::operator = (const cgvPoint3D& p) {
 	c[X] = p.c[X];
 	c[Y] = p.c[Y];
@@ -47,4 +47,3 @@ void cgvPoint3D::set( const double& x, const double& y, const double& z) {
 	c[Y] = y;
 	c[Z] = z;
 }
-

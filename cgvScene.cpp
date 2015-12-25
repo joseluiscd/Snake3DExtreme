@@ -3,11 +3,13 @@
 #include "cgvMaterial.h"
 #include "cgvColor.h"
 
-cgvScene::cgvScene(renderfunc_t* _renderf):cameras(), tcam(CGV_PARALLEL), renderf(_renderf){
-    cameras.push_back(cgvCamera(cgvPoint3D(6.0,4.0,8),cgvPoint3D(0,0,0),cgvPoint3D(0,1.0,0),
-		                                3, 3, 0.1, 200));
+cgvScene::cgvScene(renderfunc_t* _renderf):cameras(), tcam(CGV_PERSPECTIVE), renderf(_renderf), getKeyboardEvents(false){
+
 }
 
+cgvScene::~cgvScene(){
+
+}
 void cgvScene::render(){
     if(!renderf){
         cgvLight light(GL_LIGHT0, cgvPoint3D(5, 5, 0), cgvColor(1, 0, 0, 1), cgvColor(1, 1, 1, 1), cgvColor(1, 1, 1, 1), 1, 0, 0);
@@ -31,4 +33,12 @@ void cgvScene::addCamera(const cgvCamera &cam){
 
 void cgvScene::applyCamera(int numCamera){
     cameras.at(numCamera).apply(tcam);
+}
+
+void cgvScene::timerCallback(unsigned int delay){
+
+}
+
+void cgvScene::keyboardCallback(SDL_Keycode e){
+    
 }

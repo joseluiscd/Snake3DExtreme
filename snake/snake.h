@@ -4,7 +4,8 @@
 #include <list>
 #include <GL/gl.h>
 #include <GL/glu.h>
-
+#include <SDL2/SDL.h>
+#include "../cgvMaterial.h"
 using namespace std;
 
 class snake;
@@ -38,9 +39,11 @@ typedef list<snakeCell>::iterator cellIterator;
 class snake{
 private:
     list<snakeCell> body;
-
+    SDL_mutex* body_mutex; //STL is awful for synchronization
+    cgvMaterial snakeMaterial;
 public:
     snake();
+    virtual ~snake();
     void advance(snakeDirection d, bool food=false);
     inline void updateCoordinates(snakeDirection d, int& newX, int& newY);
 

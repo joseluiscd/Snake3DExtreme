@@ -3,7 +3,7 @@
 
 cgvInterfaceSDL::cgvInterfaceSDL(char* w_title, int w, int h, bool fullscreen):
 height(h), width(w), renderer(NULL), window(NULL), windowFlags(SDL_WINDOW_OPENGL),
-windowTitle(w_title)
+windowTitle(w_title), scenes_keyboard()
 {
     if(fullscreen) windowFlags = (SDL_WindowFlags)(windowFlags | SDL_WINDOW_FULLSCREEN);
 
@@ -70,6 +70,10 @@ void cgvInterfaceSDL::proccessEvents(){
             // Key was pressed
             if(event.key.keysym.sym == SDLK_ESCAPE){
                 quitSDL(0);
+            } else {
+                for(set<cgvScene*>::iterator it=scenes_keyboard.begin();it!=scenes_keyboard.end(); it++){
+                    (*it)->keyboardCallback(event.key.keysym.sym);
+                }
             }
             break;
         case SDL_QUIT:
@@ -108,4 +112,18 @@ void cgvInterfaceSDL::quitSDL(int code){
 
 void cgvInterfaceSDL::addViewport(cgvViewport &v){
     viewports.push_back(v);
+}
+
+int cgvInterfaceSDL::addTimer(cgvScene* scene, unsigned int interval){
+    int ret = SDL_AddTimer(interval, timerCallback, (void*)scene);
+    return ret!=0?ret:throw cgvException("The timer could not be added.");
+}
+
+void cgvInterfaceSDL::addKeyboardListener(cgvScene *scene){
+    scenes_keyboard.insert(scene);
+}
+unsigned int cgvInterfaceSDL::timerCallback(unsigned int delay, void *scene){
+    printf("Callback!! %d\n", delay);
+    ((cgvScene*)scene)->timerCallback(delay);
+    return delay;
 }

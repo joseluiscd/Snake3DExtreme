@@ -6,6 +6,8 @@
 
 #include "cgvCamera.h"
 
+#define PI 3.14159265
+
 // Constructors
 cgvCamera::cgvCamera(cgvPoint3D _PV, cgvPoint3D _rp, cgvPoint3D _up,
 	double _right, double _top,
@@ -66,7 +68,9 @@ void cgvCamera::apply(cameraType type) {
 	if (type==CGV_PARALLEL) {
 		glOrtho(xwmin, xwmax, ywmin, ywmax, znear, zfar);
 	} else if (type==CGV_PERSPECTIVE) {
-		glFrustum(xwmin, xwmax, ywmin, ywmax, znear, zfar);
+		double fovy, aspect;
+		computePerspectiveParameters(fovy, aspect, xwmin, xwmax, ywmin, ywmax);
+		gluPerspective(fovy, aspect, znear, zfar);
 	}
 
 	glMatrixMode (GL_MODELVIEW);
@@ -85,5 +89,6 @@ void cgvCamera::zoomOut() {}
 void cgvCamera::computePerspectiveParameters(double &fovy, double &aspect,
 	double _xwmin, double _xwmax, double _ywmin, double _ywmax)
 {
-
+	fovy = (360.0/PI)*atan(((_ywmax-_ywmin)/2)/sqrt((PV.c[0]-rp.c[0])*(PV.c[0]-rp.c[0])+(PV.c[1]-rp.c[1])*(PV.c[1]-rp.c[1])+(PV.c[2]-rp.c[2])*(PV.c[2]-rp.c[2])));
+	aspect = (_xwmax-_xwmin)/(_ywmax-_ywmin);
 }
