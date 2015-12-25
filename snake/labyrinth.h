@@ -5,13 +5,24 @@
 #include "../cgvScene.h"
 #include "../cgvLight.h"
 
+typedef enum{
+    GRID_BLANK,
+    GRID_WALL,
+    GRID_SNAKE,
+    GRID_FOOD
+} gridType;
+
 class labyrinth: public cgvScene{
 private:
     int height, width; //Size of the labyrinth
-    int** lab;
+    gridType** lab;
     snake currentSnake;
     snakeDirection currentDirection;
     cgvLight globalLight;
+
+    int timer;
+    void drawWalls();
+
 
 public:
     labyrinth(int width=20, int height=20);

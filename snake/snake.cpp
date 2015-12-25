@@ -74,7 +74,7 @@ void snake::drawCell(snakeCellType t, int x, int y){
         glTranslatef(x, y, 0);
         GLUquadricObj *cyl=gluNewQuadric();
         gluQuadricDrawStyle(cyl,GLU_FILL);
-            gluSphere(cyl, 1, 200, 200);
+            gluSphere(cyl, 0.5, 200, 200);
         gluDeleteQuadric(cyl);
     glPopMatrix();
 }
