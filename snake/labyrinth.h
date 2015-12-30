@@ -12,6 +12,14 @@ typedef enum{
     GRID_FOOD
 } gridType;
 
+typedef enum{
+    MAZE_EMPTY,
+    MAZE_ONEBOX,
+    MAZE_TWOBOXES,
+    MAZE_CROSS,
+    MAZE_EXTREME
+} mazeType;
+
 class labyrinth: public cgvScene{
 private:
     int height, width; //Size of the labyrinth
@@ -20,16 +28,24 @@ private:
     snakeDirection currentDirection;
     cgvLight globalLight;
 
-    int timer;
+    cgvMaterial wallMaterial;
+    cgvMaterial baseMaterial;
+    cgvMaterial foodMaterial;
+
+    SDL_Texture* lose_img;
+    int timerId;
+    bool lost;
     void drawWalls();
+    void drawFood(int x, int y);
 
 
 public:
-    labyrinth(int width=20, int height=20);
+    labyrinth(int width=20, int height=20, mazeType mt=MAZE_EMPTY);
     virtual void render();
     virtual void timerCallback(unsigned int delay);
     virtual void keyboardCallback(SDL_Keycode e);
     void launch();
+    void lose();
 
 };
 #endif

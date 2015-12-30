@@ -33,6 +33,10 @@ typedef struct {
     snakeCellType celltype;
 } snakeCell;
 
+typedef struct {
+    snakeCell head, tail;
+} snakePosition;
+
 typedef list<snakeCell>::iterator cellIterator;
 
 //Data structure to represent the snake
@@ -44,7 +48,10 @@ private:
 public:
     snake();
     virtual ~snake();
-    void advance(snakeDirection d, bool food=false);
+    void advance(snakeDirection d);
+    void removeTail();
+    void removeHead(); //Only when you lose
+    snakePosition getPosition();
     inline void updateCoordinates(snakeDirection d, int& newX, int& newY);
 
     void render();

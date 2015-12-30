@@ -4,7 +4,7 @@
 #include "../cgvException.h"
 
 snake::snake(): body(),
-snakeMaterial(cgvColor(0.1,0,0), cgvColor(1,0,0), cgvColor(1,1,1), 120){
+snakeMaterial(cgvColor(0,0.1,0), cgvColor(0,0.7,0), cgvColor(0,1,1,0), 120){
     body_mutex = SDL_CreateMutex();
     body.push_back(snakeCell {0, 3, SNAKE_HEAD});
     body.push_back(snakeCell {0, 2, SNAKE_VERTIC});
@@ -35,7 +35,7 @@ void snake::updateCoordinates(snakeDirection d, int& newX, int& newY){
         break;
     }
 }
-void snake::advance(snakeDirection d, bool food){
+void snake::advance(snakeDirection d){
     if(SDL_LockMutex(body_mutex) == 0){
         cellIterator head = body.begin();
         cellIterator tail = --body.end();
@@ -44,17 +44,24 @@ void snake::advance(snakeDirection d, bool food){
         updateCoordinates(d, newX, newY);
         body.push_front(snakeCell {newX, newY, SNAKE_HEAD});
 
-        if(!food){
-            body.erase(tail);
-            tail = --body.end();
-            tail->celltype = SNAKE_TAIL;
-        }
-
     } else {
         throw cgvException("Could not lock the snake's mutex.");
     }
 
     SDL_UnlockMutex(body_mutex);
+}
+
+snakePosition snake::getPosition(){
+    return snakePosition {body.front(), body.back()};
+}
+void snake::removeTail(){
+    body.pop_back();
+    auto tail = --body.end();
+    tail->celltype = SNAKE_TAIL;
+}
+
+void snake::removeHead(){
+    body.pop_front();
 }
 
 void snake::render(){

@@ -1,12 +1,20 @@
 #include "labyrinth.h"
 #include "../cgvInterfaceSDL.h"
 
-labyrinth::labyrinth(int w, int h):width(w), height(h), currentSnake(),
-cgvScene(NULL),currentDirection(SNAKE_UP), timer(0),
-globalLight(GL_LIGHT0, cgvPoint3D(5, 5, 0), cgvColor(1, 0, 0, 1), cgvColor(1, 1, 1, 1), cgvColor(1, 1, 1, 1), 1, 0, 0)
+labyrinth::labyrinth(int w, int h, mazeType mt):width(w), height(h), currentSnake(),
+cgvScene(NULL),currentDirection(SNAKE_UP), timerId(0), lost(false),
+globalLight(GL_LIGHT0, cgvPoint3D(5, 5, 0), cgvColor(1, 1, 1, 1), cgvColor(1, 1, 1, 1), cgvColor(1, 1, 1, 1), 1, 0, 0),
+wallMaterial(cgvColor(0.1,0,0), cgvColor(1,0,0), cgvColor(1,1,1,0), 120),
+baseMaterial(cgvColor(0.1,0.1,0.1), cgvColor(1,1,1), cgvColor(1,1,1,0), 120),
+foodMaterial(cgvColor(0,0,0), cgvColor(0,1,1), cgvColor(1,1,1,0), 120)
 {
-    cameras.push_back(cgvCamera(cgvPoint3D(6.0,4.0,8),cgvPoint3D(0,0,0),cgvPoint3D(0,1.0,0),
-		                                3, 3, 0.1, 200));
+    //GLOBAL CAMERA
+    cameras.push_back(cgvCamera(cgvPoint3D(width/2-0.5,height/2-0.5,8),cgvPoint3D(width/2-0.5,height/2-0.5,0),cgvPoint3D(0,1.0,0),
+		                                width, height, 0.1, 200));
+
+    //SNAKE TOP CAMERA
+    cameras.push_back(cgvCamera(cgvPoint3D(-0.5,3.5,8),cgvPoint3D(-0.5,3.5,0),cgvPoint3D(0,1.0,0),
+		                                width/3, height/3, 0.1, 200));
     lab = new gridType* [width];
 
     for(int i=0;i<width;i++){
@@ -14,21 +22,103 @@ globalLight(GL_LIGHT0, cgvPoint3D(5, 5, 0), cgvColor(1, 0, 0, 1), cgvColor(1, 1,
         for(int j=0;j<height;j++) lab[i][j]=GRID_BLANK;
     }
 
-    for(int i=0;i<10;i++){
-        lab[rand()%width][rand()%height] = GRID_WALL;
+    //DRAW THE LABYRINTH IN THE MATRIX
+    switch(mt){
+        case MAZE_EMPTY:
+        break; //Nothing, the easiest!!
+
+        case MAZE_ONEBOX:
+        for(int i=width/4;i<=3*width/4;i++){
+            for(int j=height/4;j<=3*height/4;j++){
+                lab[i][j]=GRID_WALL;
+            }
+        }
+        break;
+
+        case MAZE_TWOBOXES:
+        for(int i=width/4;i<=3*width/4;i++){
+            for(int j=height/4;j<=3*height/4;j++){
+                if(j<=(3*height/8) || j>5*height/8) lab[i][j]=GRID_WALL;
+            }
+        }
+        break;
+
+        case MAZE_CROSS:
+        int min = width<height?width:height;
+        for(int i=1;i<min/2-1;i++){
+            lab[i][i] = GRID_WALL;
+            lab[width-i-1][i] = GRID_WALL;
+            lab[width-i-1][height-i-1] = GRID_WALL;
+            lab[i][height-i-1] = GRID_WALL;
+
+        }
+
     }
 
+    //Add the first food
+    int fx, fy;
+    do{
+        fx = rand()%width;
+        fy = rand()%height;
+    } while(lab[fx][fy]!=GRID_BLANK);
+    lab[fx][fy] = GRID_FOOD;
+    int w_i,h_i;
+    lose_img = cgvInterfaceSDL::getInstance().getSDLImage("images/lose.png", w_i, h_i);
+    printf("%d\n", lose_img);
 }
 
 void labyrinth::render(){
     //TODO Draw boxes around
     globalLight.apply();
     drawWalls();
+    if(lost) glTranslatef(0.01*((rand()%10)-5), 0.01*((rand()%10)-5), 0.01*((rand()%10)-5));
     currentSnake.render();
+
+    if(lost) cgvInterfaceSDL::getInstance().drawImage(lose_img, 0, 0, 256, 254);
 }
 
+//STEP THE SNAKE
 void labyrinth::timerCallback(unsigned int delay){
     currentSnake.advance(currentDirection);
+    snakePosition p = currentSnake.getPosition();
+    int hx = p.head.x;
+    int hy = p.head.y;
+    int tx = p.tail.x;
+    int ty = p.tail.y;
+    bool addFood = false;
+
+    if(hx<0 || hy<0 || hx>=width || hy>=height){
+        lose();
+        printf("OUT\n");
+        return;
+    }
+
+    switch(lab[hx][hy]){
+    case GRID_FOOD:
+        lab[hx][hy] = GRID_BLANK;
+        addFood=true;
+        break;
+    case GRID_BLANK:
+        currentSnake.removeTail();
+        lab[tx][ty] = GRID_BLANK;
+        break;
+    default: //SNAKE OR WALL
+        printf("SNAKE OR WALL\n");
+        printf("%d, %d, %d\n", lab[hx][hy], hx, hy);
+        lose();
+        return;
+    }
+    //Add the new head
+    lab[hx][hy] = GRID_SNAKE;
+    //TODO Add food
+    if(addFood){
+        int fx, fy;
+        do{
+            fx = rand()%width;
+            fy = rand()%height;
+        } while(lab[fx][fy]!=GRID_BLANK);
+        lab[fx][fy] = GRID_FOOD;
+    }
 }
 
 void labyrinth::keyboardCallback(SDL_Keycode e){
@@ -53,38 +143,64 @@ void labyrinth::keyboardCallback(SDL_Keycode e){
 }
 void labyrinth::launch(){
     cgvInterfaceSDL& interface = cgvInterfaceSDL::getInstance();
-    interface.addTimer(this, 200);
+    timerId = interface.addTimer(this, 300);
     interface.addKeyboardListener(this);
 }
 
-void labyrinth::drawWalls(){
+void labyrinth::lose(){
+    cgvInterfaceSDL& interface = cgvInterfaceSDL::getInstance();
+    interface.deleteTimer(timerId);
+    currentSnake.removeHead();
+    printf("ÑAñaañaaaaa...\n");
+    lost=true;
+}
 
+void labyrinth::drawFood(int x, int y){
+    glPushMatrix();
+        glTranslatef(x, y, 0);
+        GLUquadricObj *cyl=gluNewQuadric();
+        gluQuadricDrawStyle(cyl,GLU_FILL);
+            gluSphere(cyl, 0.3, 200, 200);
+        gluDeleteQuadric(cyl);
+    glPopMatrix();
+}
+
+void labyrinth::drawWalls(){
+    baseMaterial.apply();
+    glBegin(GL_QUADS);
+        //THE BASE
+        glVertex3f(-0.5, -0.5, -0.5);
+        glVertex3f(width-0.5, -0.5, -0.5);
+        glVertex3f(width-0.5, height-0.5, -0.5);
+        glVertex3f(-0.5, height-0.5, -0.5);
+    glEnd();
+    wallMaterial.apply();
     glBegin(GL_QUADS);
         //LEFT BORDER
         glVertex3f(-0.5, -0.5, 0.5);
         glVertex3f(-0.5, -0.5, -0.5);
-        glVertex3f(-0.5, height+0.5, -0.5);
-        glVertex3f(-0.5, height+0.5, 0.5);
+        glVertex3f(-0.5, height-0.5, -0.5);
+        glVertex3f(-0.5, height-0.5, 0.5);
         //RIGHT BORDER
-        glVertex3f(width+0.5, -0.5, 0.5);
-        glVertex3f(width+0.5, height+0.5, 0.5);
-        glVertex3f(width+0.5, height+0.5, -0.5);
-        glVertex3f(width+0.5, -0.5, -0.5);
+        glVertex3f(width-0.5, -0.5, 0.5);
+        glVertex3f(width-0.5, height-0.5, 0.5);
+        glVertex3f(width-0.5, height-0.5, -0.5);
+        glVertex3f(width-0.5, -0.5, -0.5);
 
         //TOP BORDER
-        glVertex3f(-0.5, height+0.5, 0.5);
-        glVertex3f(-0.5, height+0.5, -0.5);
-        glVertex3f(width+0.5, height+0.5, -0.5);
-        glVertex3f(width+0.5, height+0.5, 0.5);
+        glVertex3f(-0.5, height-0.5, 0.5);
+        glVertex3f(-0.5, height-0.5, -0.5);
+        glVertex3f(width-0.5, height-0.5, -0.5);
+        glVertex3f(width-0.5, height-0.5, 0.5);
 
         //BOTTOM BORDER
         glVertex3f(-0.5, -0.5, 0.5);
-        glVertex3f(width+0.5, -0.5, 0.5);
-        glVertex3f(width+0.5, -0.5, -0.5);
+        glVertex3f(width-0.5, -0.5, 0.5);
+        glVertex3f(width-0.5, -0.5, -0.5);
         glVertex3f(-0.5, -0.5, -0.5);
 
-    glEnd();
 
+    glEnd();
     for(int i=0; i<width; i++){
         for(int j=0; j<height; j++){
             float startX=i-0.5, endX=i+0.5, startY=j-0.5, endY=j+0.5;
@@ -122,7 +238,15 @@ void labyrinth::drawWalls(){
                     glVertex3f(startX, startY, -0.5);
                 glEnd();
                 break;
+
+                case GRID_FOOD:
+                foodMaterial.apply();
+                drawFood(i, j);
+                wallMaterial.apply();
+                break;
+
             }
+
         }
     }
 }

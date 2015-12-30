@@ -18,11 +18,11 @@ int main( int argc, char* argv[] )
     inter.initSDL();
     inter.initOpenGL();
 
-    labyrinth lb(8, 8);
+    labyrinth lb(12, 12, MAZE_CROSS);
     lb.addCamera(cgvCamera(cgvPoint3D(4,4,10), cgvPoint3D(4,4,0), cgvPoint3D(0,1,0), 8, 8, .02, 20));
     lb.launch();
 
-    cgvViewport juego(0, 0, 1, 1, &lb, 1);
+    cgvViewport juego(0, 0, 1, 1, &lb, 0);
 
     inter.addViewport(juego);
 

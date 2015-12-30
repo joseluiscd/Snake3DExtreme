@@ -3,7 +3,7 @@
 #include "cgvMaterial.h"
 #include "cgvColor.h"
 
-cgvScene::cgvScene(renderfunc_t* _renderf):cameras(), tcam(CGV_PERSPECTIVE), renderf(_renderf), getKeyboardEvents(false){
+cgvScene::cgvScene(renderfunc_t* _renderf):cameras(), tcam(CGV_PARALLEL), renderf(_renderf), getKeyboardEvents(false){
 
 }
 
@@ -40,5 +40,5 @@ void cgvScene::timerCallback(unsigned int delay){
 }
 
 void cgvScene::keyboardCallback(SDL_Keycode e){
-    
+
 }

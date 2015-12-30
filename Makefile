@@ -1,5 +1,5 @@
 CXX_FLAGS = -g -std=c++11 -D_GLIBCXX_DEBUG
-LD_FLAGS = -lSDL2 -lGL -lGLU
+LD_FLAGS = -lSDL2 -lGL -lGLU -lSDL2_image
 OBJECTS = main.o cgvInterfaceSDL.o cgvViewport.o cgvCamera.o cgvPoint3D.o cgvScene.o cgvColor.o cgvLight.o cgvMaterial.o snake/snake.o snake/labyrinth.o
 CXX = g++
 .PHONY: run clean

@@ -38,7 +38,8 @@ void cgvInterfaceSDL::initSDL(){
         quitSDL();
     }
 
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_GL_CreateContext(window);
     if(renderer==NULL){
         fprintf(stderr, "Renderer could not be created: %s\n", SDL_GetError());
         quitSDL();
@@ -86,7 +87,7 @@ void cgvInterfaceSDL::proccessEvents(){
 
 void cgvInterfaceSDL::renderFrame(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the window and the z-buffer
-
+    SDL_RenderClear(renderer);
     //Render all the scenes inside their viewports
     for(int i=0; i<viewports.size(); i++){
         viewports[i].applyViewport(this->width, this->height);
@@ -95,6 +96,8 @@ void cgvInterfaceSDL::renderFrame(){
     }
 
 	// refresh the window
+    SDL_RenderDrawLine(renderer, 0, 0, 500, 500);
+    SDL_RenderPresent(renderer);
 	SDL_GL_SwapWindow(window);
 }
 
@@ -122,8 +125,22 @@ int cgvInterfaceSDL::addTimer(cgvScene* scene, unsigned int interval){
 void cgvInterfaceSDL::addKeyboardListener(cgvScene *scene){
     scenes_keyboard.insert(scene);
 }
+
 unsigned int cgvInterfaceSDL::timerCallback(unsigned int delay, void *scene){
-    printf("Callback!! %d\n", delay);
     ((cgvScene*)scene)->timerCallback(delay);
     return delay;
+}
+
+SDL_Texture* cgvInterfaceSDL::getSDLImage(const char *path, int& w, int&h){
+    SDL_Texture* toRet = IMG_LoadTexture(renderer, path);
+    toRet == NULL ? throw cgvException("Could not load the image."): 0;
+    //SDL_QueryTexture(toRet, NULL, NULL, &w, &h);
+    SDL_SetTextureBlendMode(toRet, SDL_BLENDMODE_BLEND);
+    printf("W: %d, H: %d\n", w, h);
+    return toRet;
+}
+
+void cgvInterfaceSDL::drawImage(SDL_Texture *tex, int x, int y, int width, int height){
+    SDL_Rect texr; texr.x = x; texr.y = y; texr.w = width; texr.h = height;
+    SDL_RenderCopy(renderer, tex, NULL, &texr)==0?0: throw cgvException("Could not draw the texture.");
 }
