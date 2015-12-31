@@ -25,8 +25,8 @@ private:
     char* windowTitle;
     SDL_WindowFlags windowFlags;
 
-    vector<cgvViewport> viewports;
-    set<cgvScene*> scenes_keyboard;
+    vector<cgvViewport*> viewports;
+    cgvScene* scene_keyboard;
     cgvInterfaceSDL(char* title, int w=640, int h=480, bool fullscreen=false);
     cgvInterfaceSDL(cgvInterfaceSDL& inter);
     cgvInterfaceSDL& operator=(const cgvInterfaceSDL& inter);

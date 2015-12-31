@@ -1,7 +1,7 @@
 #include "labyrinth.h"
 #include "../cgvInterfaceSDL.h"
 
-labyrinth::labyrinth(int w, int h, mazeType mt):width(w), height(h), currentSnake(),
+labyrinth::labyrinth(int w, int h, mazeType mt, int level):width(w), height(h), currentSnake(),
 cgvScene(NULL),currentDirection(SNAKE_UP), timerId(0), lost(false),
 globalLight(GL_LIGHT0, cgvPoint3D(0, 0, 8), cgvColor(1, 1, 1, 1), cgvColor(1, 1, 1, 1), cgvColor(1, 1, 1, 1), 0.7, 0, 0),
 wallMaterial(cgvColor(0.3,0.3,0.3), cgvColor(1,0,0), cgvColor(1,1,1,0), 120),
@@ -14,10 +14,10 @@ baseTexture("images/bg.png"), wallTexture("images/wall.png")
 		                                width, height, 0.1, 200));
 
     //SNAKE TOP CAMERA
-    cameras.push_back(cgvCamera(cgvPoint3D(-0.5,3.5,8),cgvPoint3D(-0.5,3.5,0),cgvPoint3D(0,1.0,0),
+    cameras.push_back(cgvCamera(cgvPoint3D(0, 0, 10), cgvPoint3D(0, 3, 0), cgvPoint3D(0,1,0),
 		                                width/3, height/3, 0.1, 200));
     lab = new gridType* [width];
-
+    level>0 && level<=10 ? this->timer_interval=(-50*level)+550 : throw cgvException("That level doesn't exist");
     for(int i=0;i<width;i++){
         lab[i] = new gridType[height];
         for(int j=0;j<height;j++) lab[i][j]=GRID_BLANK;
@@ -83,6 +83,9 @@ void labyrinth::timerCallback(unsigned int delay){
     int hy = p.head.y;
     int tx = p.tail.x;
     int ty = p.tail.y;
+
+    cameras[1].setCameraParameters(cgvPoint3D(hx, hy-3, 10), cgvPoint3D(hx, hy, 0), cgvPoint3D(0,1,0));
+
     bool addFood = false;
 
     if(hx<0 || hy<0 || hx>=width || hy>=height){
@@ -90,8 +93,7 @@ void labyrinth::timerCallback(unsigned int delay){
         printf("OUT\n");
         return;
     }
-    cameras[1].setCameraParameters(cgvPoint3D(hx, hy-3, 8), cgvPoint3D(hx, hy, 0), cgvPoint3D(0,1,0));
-    
+
     switch(lab[hx][hy]){
     case GRID_FOOD:
         lab[hx][hy] = GRID_BLANK;
@@ -142,7 +144,7 @@ void labyrinth::keyboardCallback(SDL_Keycode e){
 }
 void labyrinth::launch(){
     cgvInterfaceSDL& interface = cgvInterfaceSDL::getInstance();
-    timerId = interface.addTimer(this, 300);
+    timerId = interface.addTimer(this, timer_interval);
     interface.addKeyboardListener(this);
 }
 

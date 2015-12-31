@@ -3,7 +3,7 @@
 
 cgvInterfaceSDL::cgvInterfaceSDL(char* w_title, int w, int h, bool fullscreen):
 height(h), width(w), renderer(NULL), window(NULL), windowFlags(SDL_WINDOW_OPENGL),
-windowTitle(w_title), scenes_keyboard()
+windowTitle(w_title), scene_keyboard(NULL)
 {
     if(fullscreen) windowFlags = (SDL_WindowFlags)(windowFlags | SDL_WINDOW_FULLSCREEN);
 
@@ -73,9 +73,7 @@ void cgvInterfaceSDL::proccessEvents(){
             if(event.key.keysym.sym == SDLK_ESCAPE){
                 quitSDL(0);
             } else {
-                for(set<cgvScene*>::iterator it=scenes_keyboard.begin();it!=scenes_keyboard.end(); it++){
-                    (*it)->keyboardCallback(event.key.keysym.sym);
-                }
+                if(scene_keyboard) scene_keyboard->keyboardCallback(event.key.keysym.sym);
             }
             break;
         case SDL_QUIT:
@@ -90,9 +88,9 @@ void cgvInterfaceSDL::renderFrame(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the window and the z-buffer
     //Render all the scenes inside their viewports
     for(int i=0; i<viewports.size(); i++){
-        viewports[i].applyViewport(this->width, this->height);
-        viewports[i].applyCamera();
-        viewports[i].renderScene();
+        viewports[i]->applyViewport(this->width, this->height);
+        viewports[i]->applyCamera();
+        viewports[i]->renderScene();
     }
 
 	// refresh the window
@@ -111,8 +109,8 @@ void cgvInterfaceSDL::quitSDL(int code){
     exit(code);
 }
 
-void cgvInterfaceSDL::addViewport(cgvViewport &v){
-    viewports.push_back(v);
+void cgvInterfaceSDL::addViewport(cgvViewport& v){
+    viewports.push_back(&v);
 }
 
 int cgvInterfaceSDL::addTimer(cgvScene* scene, unsigned int interval){
@@ -121,7 +119,7 @@ int cgvInterfaceSDL::addTimer(cgvScene* scene, unsigned int interval){
 }
 
 void cgvInterfaceSDL::addKeyboardListener(cgvScene *scene){
-    scenes_keyboard.insert(scene);
+    scene_keyboard = scene;
 }
 
 unsigned int cgvInterfaceSDL::timerCallback(unsigned int delay, void *scene){

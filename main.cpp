@@ -11,23 +11,25 @@
 
 #include "snake/snake.h"
 #include "snake/labyrinth.h"
+#include "snake/levelSelector.h"
 
 int main( int argc, char* argv[] )
 {
-    cgvInterfaceSDL& inter = cgvInterfaceSDL::getInstance("Snake3D Volcano Extreme (Ninja Edition!!) (PEGI 8)", 640, 640, false);
+    cgvInterfaceSDL& inter = cgvInterfaceSDL::getInstance("Snake3D Extreme (Ninja Edition!!) (PEGI 18)", 640, 640, false);
     inter.initSDL();
     inter.initOpenGL();
 
-    labyrinth lb(12, 12, MAZE_CROSS);
-    lb.addCamera(cgvCamera(cgvPoint3D(4,4,10), cgvPoint3D(4,4,0), cgvPoint3D(0,1,0), 8, 8, .02, 20));
-    lb.launch();
+    labyrinth lb(20, 20, MAZE_EMPTY, 5);
 
     cgvViewport juego(0, 0, 1, 1, &lb, 1, CGV_PERSPECTIVE);
-    cgvViewport minimap(0, 0, 0.3, 0.3, &lb, 0);
+    cgvViewport minimap(0, 0, 0.4, 0.4, &lb, 0);
+    levelSelector ls(&juego, &minimap);
+    cgvViewport levelSelect(0.1, 0.1, 0.9, 0.9, &ls);
 
     inter.addViewport(juego);
     inter.addViewport(minimap);
-
+    inter.addViewport(levelSelect);
+    ls.launch();
     inter.renderLoop();
     return 0;
 }

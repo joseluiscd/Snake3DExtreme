@@ -19,6 +19,9 @@ public:
     void applyCamera();
     void renderScene();
 
+    void setScene(cgvScene* _scene){scene=_scene;};
+    cgvScene* getScene(){return scene;};
+
 
 };
 

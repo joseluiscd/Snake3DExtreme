@@ -17,13 +17,13 @@ typedef enum{
     MAZE_EMPTY,
     MAZE_ONEBOX,
     MAZE_TWOBOXES,
-    MAZE_CROSS,
-    MAZE_EXTREME
+    MAZE_CROSS
 } mazeType;
 
 class labyrinth: public cgvScene{
 private:
     int height, width; //Size of the labyrinth
+    int timer_interval;
     gridType** lab;
     snake currentSnake;
     snakeDirection currentDirection;
@@ -42,7 +42,7 @@ private:
 
 
 public:
-    labyrinth(int width=20, int height=20, mazeType mt=MAZE_EMPTY);
+    labyrinth(int width=20, int height=20, mazeType mt=MAZE_EMPTY, int level=5);
     virtual void render();
     virtual void timerCallback(unsigned int delay);
     virtual void keyboardCallback(SDL_Keycode e);

@@ -4,9 +4,9 @@
 #include <stdexcept>
 class cgvException : public exception {
 private:
-    char* what_happened;
+    const char* what_happened;
 public:
-    cgvException(char* _what): what_happened(_what) {};
+    cgvException(const char* _what): what_happened(_what) {};
 
     virtual const char* what() const throw(){
         return what_happened;
