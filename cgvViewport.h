@@ -10,9 +10,10 @@ private:
     float x, y, w, h;
     cgvScene* scene;
     int numCamera;
+    cameraType typeCamera;
 
 public:
-    cgvViewport(float _x, float _y, float _w, float _h, cgvScene* _scene, int cameraNum=0);
+    cgvViewport(float _x, float _y, float _w, float _h, cgvScene* _scene, int cameraNum=0, cameraType camT=CGV_PARALLEL);
 
     void applyViewport(int width, int height); //Width and height of the window
     void applyCamera();

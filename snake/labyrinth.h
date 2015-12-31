@@ -4,6 +4,7 @@
 #include "snake.h"
 #include "../cgvScene.h"
 #include "../cgvLight.h"
+#include "../cgvTexture.h"
 
 typedef enum{
     GRID_BLANK,
@@ -32,7 +33,8 @@ private:
     cgvMaterial baseMaterial;
     cgvMaterial foodMaterial;
 
-    SDL_Texture* lose_img;
+    cgvTexture baseTexture;
+    cgvTexture wallTexture;
     int timerId;
     bool lost;
     void drawWalls();

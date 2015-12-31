@@ -13,7 +13,6 @@ typedef function<void(cgvScene*)> renderfunc_t;
 class cgvScene{
 protected:
     vector<cgvCamera> cameras;
-    cameraType tcam;
     renderfunc_t* renderf;
     bool getKeyboardEvents;
 
@@ -22,7 +21,7 @@ public:
     virtual ~cgvScene();
 
     virtual void render();
-    void applyCamera(int numCamera);
+    void applyCamera(int numCamera, cameraType cType);
     void addCamera(const cgvCamera& cam);
     virtual void timerCallback(unsigned int delay);
     virtual void keyboardCallback(SDL_Keycode e);

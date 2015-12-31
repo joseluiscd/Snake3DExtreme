@@ -60,6 +60,7 @@ void cgvInterfaceSDL::initOpenGL(){
     glEnable(GL_NORMALIZE); // normalize the normal vectors required by the lighting computation.
 	glEnable(GL_TEXTURE_2D); // enable the use of 2D textures
 
+
 }
 
 void cgvInterfaceSDL::proccessEvents(){
@@ -87,7 +88,6 @@ void cgvInterfaceSDL::proccessEvents(){
 
 void cgvInterfaceSDL::renderFrame(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the window and the z-buffer
-    SDL_RenderClear(renderer);
     //Render all the scenes inside their viewports
     for(int i=0; i<viewports.size(); i++){
         viewports[i].applyViewport(this->width, this->height);
@@ -96,8 +96,6 @@ void cgvInterfaceSDL::renderFrame(){
     }
 
 	// refresh the window
-    SDL_RenderDrawLine(renderer, 0, 0, 500, 500);
-    SDL_RenderPresent(renderer);
 	SDL_GL_SwapWindow(window);
 }
 
@@ -131,16 +129,13 @@ unsigned int cgvInterfaceSDL::timerCallback(unsigned int delay, void *scene){
     return delay;
 }
 
-SDL_Texture* cgvInterfaceSDL::getSDLImage(const char *path, int& w, int&h){
+SDL_Texture* cgvInterfaceSDL::getSDLTexture(const char *path, int& w, int&h){
     SDL_Texture* toRet = IMG_LoadTexture(renderer, path);
     toRet == NULL ? throw cgvException("Could not load the image."): 0;
-    //SDL_QueryTexture(toRet, NULL, NULL, &w, &h);
-    SDL_SetTextureBlendMode(toRet, SDL_BLENDMODE_BLEND);
+    SDL_QueryTexture(toRet, NULL, NULL, &w, &h);
+    SDL_SetTextureBlendMode(toRet, SDL_BLENDMODE_NONE);
+    SDL_SetTextureAlphaMod(toRet, 255);
+    SDL_SetTextureColorMod(toRet, 255, 255, 255);
     printf("W: %d, H: %d\n", w, h);
     return toRet;
-}
-
-void cgvInterfaceSDL::drawImage(SDL_Texture *tex, int x, int y, int width, int height){
-    SDL_Rect texr; texr.x = x; texr.y = y; texr.w = width; texr.h = height;
-    SDL_RenderCopy(renderer, tex, NULL, &texr)==0?0: throw cgvException("Could not draw the texture.");
 }

@@ -50,9 +50,8 @@ public:
         SDL_RemoveTimer(timer) ? true : throw cgvException("The timer wasn't removed");
     }
 
-    SDL_Texture* getSDLImage(const char* path, int& w, int& h);
-    void drawImage(SDL_Texture*, int x, int y, int width, int height);
-    
+    SDL_Texture* getSDLTexture(const char* path, int& w, int& h);
+
     static unsigned int timerCallback(unsigned int delay, void* callback);
     static cgvInterfaceSDL& getInstance(char* w_title = "", int w=640, int h=480, bool fullscreen=false);
 };

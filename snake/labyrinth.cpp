@@ -3,10 +3,11 @@
 
 labyrinth::labyrinth(int w, int h, mazeType mt):width(w), height(h), currentSnake(),
 cgvScene(NULL),currentDirection(SNAKE_UP), timerId(0), lost(false),
-globalLight(GL_LIGHT0, cgvPoint3D(5, 5, 0), cgvColor(1, 1, 1, 1), cgvColor(1, 1, 1, 1), cgvColor(1, 1, 1, 1), 1, 0, 0),
-wallMaterial(cgvColor(0.1,0,0), cgvColor(1,0,0), cgvColor(1,1,1,0), 120),
-baseMaterial(cgvColor(0.1,0.1,0.1), cgvColor(1,1,1), cgvColor(1,1,1,0), 120),
-foodMaterial(cgvColor(0,0,0), cgvColor(0,1,1), cgvColor(1,1,1,0), 120)
+globalLight(GL_LIGHT0, cgvPoint3D(0, 0, 8), cgvColor(1, 1, 1, 1), cgvColor(1, 1, 1, 1), cgvColor(1, 1, 1, 1), 0.7, 0, 0),
+wallMaterial(cgvColor(0.3,0.3,0.3), cgvColor(1,0,0), cgvColor(1,1,1,0), 120),
+baseMaterial(cgvColor(0.3,0.1,0.1), cgvColor(1,1,1), cgvColor(1,1,1,0), 120),
+foodMaterial(cgvColor(0,0.1,0.1), cgvColor(0,1,1), cgvColor(1,1,1,0), 120),
+baseTexture("images/bg.png"), wallTexture("images/wall.png")
 {
     //GLOBAL CAMERA
     cameras.push_back(cgvCamera(cgvPoint3D(width/2-0.5,height/2-0.5,8),cgvPoint3D(width/2-0.5,height/2-0.5,0),cgvPoint3D(0,1.0,0),
@@ -63,8 +64,6 @@ foodMaterial(cgvColor(0,0,0), cgvColor(0,1,1), cgvColor(1,1,1,0), 120)
     } while(lab[fx][fy]!=GRID_BLANK);
     lab[fx][fy] = GRID_FOOD;
     int w_i,h_i;
-    lose_img = cgvInterfaceSDL::getInstance().getSDLImage("images/lose.png", w_i, h_i);
-    printf("%d\n", lose_img);
 }
 
 void labyrinth::render(){
@@ -74,7 +73,6 @@ void labyrinth::render(){
     if(lost) glTranslatef(0.01*((rand()%10)-5), 0.01*((rand()%10)-5), 0.01*((rand()%10)-5));
     currentSnake.render();
 
-    if(lost) cgvInterfaceSDL::getInstance().drawImage(lose_img, 0, 0, 256, 254);
 }
 
 //STEP THE SNAKE
@@ -92,7 +90,8 @@ void labyrinth::timerCallback(unsigned int delay){
         printf("OUT\n");
         return;
     }
-
+    cameras[1].setCameraParameters(cgvPoint3D(hx, hy-3, 8), cgvPoint3D(hx, hy, 0), cgvPoint3D(0,1,0));
+    
     switch(lab[hx][hy]){
     case GRID_FOOD:
         lab[hx][hy] = GRID_BLANK;
@@ -167,40 +166,72 @@ void labyrinth::drawFood(int x, int y){
 
 void labyrinth::drawWalls(){
     baseMaterial.apply();
+    baseTexture.apply();
+    float w = baseTexture.getWidth();
+    float h = baseTexture.getHeight();
+    glNormal3f(0, 0, 1);
     glBegin(GL_QUADS);
         //THE BASE
+        glTexCoord2f(0, h);
         glVertex3f(-0.5, -0.5, -0.5);
+        glTexCoord2f(w, h);
         glVertex3f(width-0.5, -0.5, -0.5);
+        glTexCoord2f(w, 0);
         glVertex3f(width-0.5, height-0.5, -0.5);
+        glTexCoord2f(0, 0);
         glVertex3f(-0.5, height-0.5, -0.5);
     glEnd();
+    baseTexture.disable();
+
     wallMaterial.apply();
+    wallTexture.apply();
     glBegin(GL_QUADS);
         //LEFT BORDER
+        glNormal3f(1, 0, 0);
+        glTexCoord2f(0, h*height);
         glVertex3f(-0.5, -0.5, 0.5);
+        glTexCoord2f(w*width, h*height);
         glVertex3f(-0.5, -0.5, -0.5);
+        glTexCoord2f(w*width, 0);
         glVertex3f(-0.5, height-0.5, -0.5);
+        glTexCoord2f(0, 0);
         glVertex3f(-0.5, height-0.5, 0.5);
         //RIGHT BORDER
+        glNormal3f(-1, 0, 0);
+        glTexCoord2f(0, h*height);
         glVertex3f(width-0.5, -0.5, 0.5);
+        glTexCoord2f(w*width, h*height);
         glVertex3f(width-0.5, height-0.5, 0.5);
+        glTexCoord2f(w*width, 0);
         glVertex3f(width-0.5, height-0.5, -0.5);
+        glTexCoord2f(0, 0);
         glVertex3f(width-0.5, -0.5, -0.5);
 
         //TOP BORDER
+        glNormal3f(-1, 0, 0);
+        glTexCoord2f(0, h*height);
         glVertex3f(-0.5, height-0.5, 0.5);
+        glTexCoord2f(w*width, h*height);
         glVertex3f(-0.5, height-0.5, -0.5);
+        glTexCoord2f(w*width, 0);
         glVertex3f(width-0.5, height-0.5, -0.5);
+        glTexCoord2f(0, 0);
         glVertex3f(width-0.5, height-0.5, 0.5);
 
         //BOTTOM BORDER
+        glNormal3f(1, 0, 0);
+        glTexCoord2f(0, h*height);
         glVertex3f(-0.5, -0.5, 0.5);
+        glTexCoord2f(w*width, h*height);
         glVertex3f(width-0.5, -0.5, 0.5);
+        glTexCoord2f(w*width, 0);
         glVertex3f(width-0.5, -0.5, -0.5);
+        glTexCoord2f(0, 0);
         glVertex3f(-0.5, -0.5, -0.5);
 
 
     glEnd();
+
     for(int i=0; i<width; i++){
         for(int j=0; j<height; j++){
             float startX=i-0.5, endX=i+0.5, startY=j-0.5, endY=j+0.5;
@@ -208,33 +239,58 @@ void labyrinth::drawWalls(){
                 case GRID_WALL:
                 glBegin(GL_QUADS);
                     //FRONT QUAD
+                    glNormal3f(0, 0, 1);
+                    glTexCoord2f(0, h);
                     glVertex3f(startX, startY, 0.5);
+                    glTexCoord2f(w, h);
                     glVertex3f(endX, startY, 0.5);
+                    glTexCoord2f(w, 0);
                     glVertex3f(endX, endY, 0.5);
+                    glTexCoord2f(0, 0);
                     glVertex3f(startX, endY, 0.5);
 
                     //TOP QUAD
+                    glNormal3f(0, 1, 0);
+                    glTexCoord2f(0, h);
                     glVertex3f(startX, endY, 0.5);
+                    glTexCoord2f(w, h);
                     glVertex3f(endX, endY, 0.5);
+                    glTexCoord2f(w, 0);
                     glVertex3f(endX, endY, -0.5);
+                    glTexCoord2f(0, 0);
                     glVertex3f(startX, endY, -0.5);
 
                     //BOTTOM QUAD
+                    glNormal3f(0, -1, 0);
+                    glTexCoord2f(0, h);
                     glVertex3f(startX, startY, 0.5);
+                    glTexCoord2f(w, h);
                     glVertex3f(startX, startY, -0.5);
+                    glTexCoord2f(w, 0);
                     glVertex3f(endX, startY, -0.5);
+                    glTexCoord2f(0, 0);
                     glVertex3f(endX, startY, 0.5);
 
                     //RIGHT QUAD
+                    glNormal3f(1, 0, 0);
+                    glTexCoord2f(0, h);
                     glVertex3f(endX, startY, 0.5);
+                    glTexCoord2f(w, h);
                     glVertex3f(endX, startY, -0.5);
+                    glTexCoord2f(w, 0);
                     glVertex3f(endX, endY, -0.5);
+                    glTexCoord2f(0, 0);
                     glVertex3f(endX, endY, 0.5);
 
                     //LEFT QUAD
+                    glNormal3f(-1, 0, 0);
+                    glTexCoord2f(0, h);
                     glVertex3f(startX, startY, 0.5);
+                    glTexCoord2f(w, h);
                     glVertex3f(startX, endY, 0.5);
+                    glTexCoord2f(w, 0);
                     glVertex3f(startX, endY, -0.5);
+                    glTexCoord2f(0, 0);
                     glVertex3f(startX, startY, -0.5);
                 glEnd();
                 break;
@@ -249,4 +305,5 @@ void labyrinth::drawWalls(){
 
         }
     }
+    wallTexture.disable();
 }

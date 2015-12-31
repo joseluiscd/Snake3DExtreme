@@ -3,7 +3,7 @@
 #include "cgvMaterial.h"
 #include "cgvColor.h"
 
-cgvScene::cgvScene(renderfunc_t* _renderf):cameras(), tcam(CGV_PARALLEL), renderf(_renderf), getKeyboardEvents(false){
+cgvScene::cgvScene(renderfunc_t* _renderf):cameras(), renderf(_renderf), getKeyboardEvents(false){
 
 }
 
@@ -31,7 +31,7 @@ void cgvScene::addCamera(const cgvCamera &cam){
     cameras.push_back(cam);
 }
 
-void cgvScene::applyCamera(int numCamera){
+void cgvScene::applyCamera(int numCamera, cameraType tcam){
     cameras.at(numCamera).apply(tcam);
 }
 
